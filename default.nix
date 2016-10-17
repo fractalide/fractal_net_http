@@ -4,9 +4,7 @@ let
   fractalide = import (fetchTarball fractalide_repo) {};
   pkgs = fractalide.pkgs;
   support = fractalide.support;
-  vendor_contracts = import ./contracts {inherit pkgs support; contracts = all_contracts ;};
-  all_contracts = vendor_contracts // fractalide.contracts;
-  vendor_components = import ./components {inherit pkgs support all_components; contracts = all_contracts;};
-  all_components = vendor_components // fractalide.components;
+  contracts = fractalide.contracts // import ./contracts {inherit pkgs support contracts ;};
+  components = fractalide.components // import ./components {inherit pkgs support components contracts;};
 in
-all_components.vendor_test_nand
+components.vendor_test_nand
