@@ -8,3 +8,8 @@ Components may be closed source if needed.
 ### Contracts
 
 Contracts in this repository are not communicated to the canonical `gitlab.com/fractalide/fractalide` therefore you are encouraged to commit repo boundary crossing contracts to the conanical repo contracts folder.
+
+### Components
+
+Ensure you keep your organization's name in the `components/` directory.
+For example `components/<vendor>/...` this is needed to ensure we don't get name collisions upstream.
