@@ -7,4 +7,5 @@ let
   contracts = fractalide.contracts // import ./contracts {inherit pkgs support contracts ;};
   components = fractalide.components // import ./components {inherit pkgs support components contracts;};
 in
+# the top level subnet you want to expose to the fractalide repo
 components.vendor_test_nand
