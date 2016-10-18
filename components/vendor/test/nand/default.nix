@@ -1,16 +1,12 @@
 { stdenv, buildFractalideSubnet, upkeepers
   , vendor_maths_boolean_nand
-  , maths_boolean_print
-  # contracts
-  , vendor_maths_boolean
-  , maths_boolean
   ,...}:
 
   buildFractalideSubnet rec {
    src = ./.;
    subnet = ''
-  '${vendor_maths_boolean}:(boolean=true)' -> a nand(${vendor_maths_boolean_nand}) output -> input io_print(${maths_boolean_print})
-  '${maths_boolean}:(boolean=true)' -> b nand()
+   a => a nand(${vendor_maths_boolean_nand}) output => output
+   b => b nand()
      '';
 
    meta = with stdenv.lib; {

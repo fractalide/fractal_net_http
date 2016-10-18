@@ -3,8 +3,8 @@ extern crate rustfbp;
 extern crate capnp;
 
 component! {
-  maths_boolean_nand, contracts(vendor_maths_boolean, maths_boolean)
-  inputs(a: vendor_maths_boolean, b: maths_boolean),
+  maths_boolean_nand, contracts(maths_boolean)
+  inputs(a: maths_boolean, b: maths_boolean),
   inputs_array(),
   outputs(output: maths_boolean),
   outputs_array(),
@@ -13,7 +13,7 @@ component! {
   fn run(&mut self) -> Result<()> {
     let a = {
         let mut ip_a = try!(self.ports.recv("a"));
-        let a_reader: vendor_maths_boolean::Reader = try!(ip_a.get_root());
+        let a_reader: maths_boolean::Reader = try!(ip_a.get_root());
         a_reader.get_boolean()
     };
     let b = {
