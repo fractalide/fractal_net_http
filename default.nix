@@ -1,10 +1,17 @@
-{ fractalide ? import (fetchTarball https://github.com/fractalide/fractalide/archive/master.tar.gz) {}
+{ fractalide ? import <fractalide> {}
   , pkgs ? fractalide.pkgs
   , support ? fractalide.support
   , contracts ? fractalide.contracts
   , components ? fractalide.components}:
 let
-  all_contracts = contracts // import ./contracts {inherit pkgs support all_contracts ;};
-  all_components = components // import ./components {inherit pkgs support all_components all_contracts;};
+  ### change these two expressions
+  publicComponentOrSubnet = allComponents.vendor_maths_boolean_nand; # expose your public reusable subnet
+  exeSubnet = allComponents.vendor_test_nand; # a subnet containing non-generic IIPs you don't want to expose to the community
+  allContracts = contracts // import ./contracts {inherit pkgs support allContracts;};
+  allComponents = components // import ./components {inherit pkgs support allContracts allComponents;};
 in
-all_components.vendor_test_nand
+if fractalide == null then publicComponentOrSubnet
+else import (<fractalide> + "/support/vm/") {inherit pkgs support;
+  contracts = allContracts;
+  components = allComponents;
+  exeSubnet = exeSubnet;}
