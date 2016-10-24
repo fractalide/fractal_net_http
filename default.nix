@@ -4,14 +4,15 @@
   , contracts ? fractalide.contracts
   , components ? fractalide.components}:
 let
-  ### change these two expressions
-  publicComponentOrSubnet = allComponents.vendor_maths_boolean_nand; # expose your public reusable subnet
-  exeSubnet = allComponents.vendor_test_nand; # a subnet containing non-generic IIPs you don't want to expose to the community
+  publicComponentOrSubnet = allComponents.example_satellite_repo_nand;
+  exeSubnet = allComponents.example_satellite_repo_test;
   allContracts = contracts // import ./contracts {inherit pkgs support allContracts;};
   allComponents = components // import ./components {inherit pkgs support allContracts allComponents;};
+  result = if fractalide == null
+    then publicComponentOrSubnet
+    else import (<fractalide> + "/support/vm/") {inherit pkgs support;
+      contracts = allContracts;
+      components = allComponents;
+      exeSubnet = exeSubnet;};
 in
-if fractalide == null then publicComponentOrSubnet
-else import (<fractalide> + "/support/vm/") {inherit pkgs support;
-  contracts = allContracts;
-  components = allComponents;
-  exeSubnet = exeSubnet;}
+  result

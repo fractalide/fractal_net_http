@@ -2,8 +2,8 @@
 let
 callPackage = pkgs.lib.callPackageWith (pkgs // support // allContracts // allComponents);
 self = rec {
-  vendor_maths_boolean_nand = callPackage ./vendor/maths/boolean/nand {};
-  vendor_test_nand = callPackage ./vendor/test/nand {};
+  example_satellite_repo_nand = callPackage ./example/satellite/repo/nand {};
+  example_satellite_repo_test = callPackage ./example/satellite/repo/test {};
 };
 in
 self

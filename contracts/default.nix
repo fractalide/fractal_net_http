@@ -3,5 +3,5 @@ let
 callPackage = pkgs.lib.callPackageWith (pkgs // allContracts // support);
 in
 rec {
-  vendor_maths_boolean = callPackage ./vendor/maths/boolean {};
+  example_satellite_repo_boolean = callPackage ./example/satellite/repo/boolean {};
 }
