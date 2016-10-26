@@ -12,7 +12,7 @@ We also encourage you to use the [C4](CONTRIBUTING.md) to govern your project, h
 #### Solution:
 ...
 ### Stability:
-Choose one:https://github.com/fractalide/fractalide
+Choose one:
 [Experimental, Stable, Legacy, Deprecate ]
 
 ### Build Instructions
