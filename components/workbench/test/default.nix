@@ -1,14 +1,14 @@
 { stdenv, buildFractalideSubnet, upkeepers
-  , example_workspace_nand
+  , workbench_nand
   , maths_boolean_print
-  , maths_boolean
+  , workbench_boolean
   ,...}:
 
   buildFractalideSubnet rec {
    src = ./.;
    subnet = ''
-   '${maths_boolean}:(boolean=true)' -> a nand(${example_workspace_nand}) output -> input io_print(${maths_boolean_print})
-   '${maths_boolean}:(boolean=true)' -> b nand()
+   '${workbench_boolean}:(boolean=true)' -> a nand(${workbench_nand}) output -> input io_print(${maths_boolean_print})
+   '${workbench_boolean}:(boolean=true)' -> b nand()
      '';
 
    meta = with stdenv.lib; {

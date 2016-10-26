@@ -1,13 +1,13 @@
 { stdenv
   , buildFractalideComponent
   , genName, upkeepers
-  , example_workspace_boolean
+  , workbench_boolean
   , ...}:
 
 buildFractalideComponent rec {
   name = genName ./.;
   src = ./.;
-  contracts = [ example_workspace_boolean ];
+  contracts = [ workbench_boolean ];
   depsSha256 = "0fkqkrh9v4q4b13mr5bng434b6wf0w4d28v830vsqls8fz5qzanq";
 
   meta = with stdenv.lib; {
