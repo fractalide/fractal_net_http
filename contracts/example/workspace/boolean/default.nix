@@ -5,7 +5,7 @@ buildFractalideContract rec {
   contract = ''
   @0xbde554c96bf60f36;
 
-  struct ExampleSatelliteRepoBoolean {
+  struct ExampleWorkspaceBoolean {
     boolean @0 :Bool;
   }
   '';

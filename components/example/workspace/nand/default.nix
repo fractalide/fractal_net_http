@@ -1,14 +1,14 @@
 { stdenv
   , buildFractalideComponent
   , genName, upkeepers
-  , example_satellite_repo_boolean
+  , example_workspace_boolean
   , ...}:
 
 buildFractalideComponent rec {
   name = genName ./.;
   src = ./.;
-  contracts = [ example_satellite_repo_boolean ];
-  depsSha256 = "0w4h8xhirmcaj3g5wmbh2yvj6fy6j6j0nwr1b3i5axhh764i9kmx";
+  contracts = [ example_workspace_boolean ];
+  depsSha256 = "0fkqkrh9v4q4b13mr5bng434b6wf0w4d28v830vsqls8fz5qzanq";
 
   meta = with stdenv.lib; {
     description = "Component: NAND logic gate";

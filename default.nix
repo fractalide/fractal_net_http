@@ -4,8 +4,8 @@
   , contracts ? fractalide.contracts
   , components ? fractalide.components}:
 let
-  publicComponentOrSubnet = allComponents.example_satellite_repo_nand;
-  exeSubnet = allComponents.example_satellite_repo_test;
+  publicComponentOrSubnet = allComponents.example_workspace_nand;
+  exeSubnet = allComponents.example_workspace_test;
   allContracts = contracts // import ./contracts {inherit pkgs support allContracts;};
   allComponents = components // import ./components {inherit pkgs support allContracts allComponents;};
   result = if fractalide == null
