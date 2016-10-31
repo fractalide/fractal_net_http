@@ -1,14 +1,22 @@
 { stdenv, buildFractalideSubnet, upkeepers
-  , workbench_nand
-  , maths_boolean_print
-  , workbench_boolean
+  , generic_text
+  , net_http
+  , net_raw_text
+  # contracts
+  , net_address
   ,...}:
 
   buildFractalideSubnet rec {
    src = ./.;
    subnet = ''
-   '${workbench_boolean}:(boolean=true)' -> a nand(${workbench_nand}) output -> input io_print(${maths_boolean_print})
-   '${workbench_boolean}:(boolean=true)' -> b nand()
+   net_http(${net_http})
+   '${net_address}:(address="0.0.0.0:8000")' -> listen net_http()
+
+   '${generic_text}:(text="Hello world")' -> option world(${net_raw_text})
+   '${generic_text}:(text="Hello fractalide")' -> option fractalide(${net_raw_text})
+
+   net_http() get[/] -> input world() output -> response net_http()
+   net_http() get[/fractalide] -> input fractalide() output -> response net_http()
      '';
 
    meta = with stdenv.lib; {

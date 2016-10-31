@@ -1,17 +1,20 @@
-{ stdenv
+{ stdenv, openssl
   , buildFractalideComponent
   , genName, upkeepers
-  , workbench_boolean
+  , net_address
+  , net_request
+  , net_response
   , ...}:
 
 buildFractalideComponent rec {
   name = genName ./.;
   src = ./.;
-  contracts = [ workbench_boolean ];
-  depsSha256 = "0fkqkrh9v4q4b13mr5bng434b6wf0w4d28v830vsqls8fz5qzanq";
+  contracts = [ net_address net_request net_response ];
+  buildInputs = [ openssl ];
+  depsSha256 = "1ila2j76y92ml8c54192qndh0mfjhqqi9a88qifwsazga2qza61a";
 
   meta = with stdenv.lib; {
-    description = "Component: NAND logic gate";
+    description = "Component: net http";
     homepage = https://github.com/fractalide/fractalide/tree/master/components/maths/boolean/nand;
     license = with licenses; [ mpl20 ];
     maintainers = with upkeepers; [ dmichiels sjmackenzie];

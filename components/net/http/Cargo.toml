@@ -10,4 +10,4 @@ crate-type = ["dylib"]
 [dependencies]
 capnp = "*"
 rustfbp = "*"
-hyper = "*"
+tiny_http = "*"

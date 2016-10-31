@@ -3,15 +3,16 @@
 buildFractalideContract rec {
   src = ./.;
   contract = ''
-  @0xbde554c96bf60f36;
+  @0xb10b096b4e676688;
 
-  struct WorkbenchBoolean {
-    boolean @0 :Bool;
+  struct NetResponse {
+    id @0 :UInt64;
+    response @1 :Text;
   }
   '';
 
   meta = with stdenv.lib; {
-    description = "Contract: Describes a simple boolean data type";
+    description = "Contract: Describes an http response";
     homepage = https://github.com/fractalide/fractalide/tree/master/contracts/maths/boolean;
     license = with licenses; [ mpl20 ];
     maintainers = with upkeepers; [ dmichiels sjmackenzie];
