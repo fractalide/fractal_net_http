@@ -11,3 +11,4 @@ crate-type = ["dylib"]
 capnp = "*"
 rustfbp = "*"
 tiny_http = "*"
+regex = "*"

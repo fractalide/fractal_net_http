@@ -14,9 +14,14 @@
 
    '${generic_text}:(text="Hello world")' -> option world(${net_raw_text})
    '${generic_text}:(text="Hello fractalide")' -> option fractalide(${net_raw_text})
+   '${generic_text}:(text="Hello fractalide with ID")' -> option fractalideID(${net_raw_text})
+   '${generic_text}:(text="Hello fractalide with Post!")' -> option fractalideP(${net_raw_text})
 
-   net_http() get[/] -> input world() output -> response net_http()
-   net_http() get[/fractalide] -> input fractalide() output -> response net_http()
+   net_http() GET[^/$] -> input world() output -> response net_http()
+   net_http() GET[^/fractalide] -> input fractalide() output -> response net_http()
+   net_http() GET[^/fractalide/.+] -> input fractalideID() output -> response net_http()
+
+   net_http() POST[/fractalide] -> input fractalideP() output -> response net_http()
      '';
 
    meta = with stdenv.lib; {

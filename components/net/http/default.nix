@@ -11,7 +11,7 @@ buildFractalideComponent rec {
   src = ./.;
   contracts = [ net_address net_request net_response ];
   buildInputs = [ openssl ];
-  depsSha256 = "1ila2j76y92ml8c54192qndh0mfjhqqi9a88qifwsazga2qza61a";
+  depsSha256 = "0dzs1ns9r649isfhf3rf039hazqvqxjkdv19s945w6xd34y0aapz";
 
   meta = with stdenv.lib; {
     description = "Component: net http";
