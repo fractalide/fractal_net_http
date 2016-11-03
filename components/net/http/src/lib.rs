@@ -52,18 +52,18 @@ impl Portal {
 }
 
 component! {
-  net_http, contracts(net_address, net_request, net_response)
-  inputs(listen: net_address, request: any, response: net_response),
+  net_http, contracts(net_http_address, net_http_request, net_http_response)
+  inputs(listen: net_http_address, request: any, response: net_http_response),
   inputs_array(),
   outputs(),
-  outputs_array(GET: net_request, POST: net_request, PUT: net_request, DELETE: net_request),
+  outputs_array(GET: net_http_request, POST: net_http_request, PUT: net_http_request, DELETE: net_http_request),
   option(),
   acc(), portal(Portal => Portal::new())
   fn run(&mut self) -> Result<()> {
       if let Ok(mut ip) = self.ports.try_recv("listen") {
           // TODO :: clean the portal
           {
-              let reader: net_address::Reader = ip.get_root()?;
+              let reader: net_http_address::Reader = ip.get_root()?;
               self.portal.listen(reader.get_address()?, self.ports.get_sender("request")?)?;
           }
       }
@@ -84,7 +84,7 @@ component! {
                   // Build the request
                   let mut ip = IP::new();
                   {
-                      let mut builder: net_request::Builder = ip.init_root();
+                      let mut builder: net_http_request::Builder = ip.init_root();
                       // ID
                       builder.set_id(self.portal.id);
                       // URL
@@ -135,7 +135,7 @@ component! {
       }
 
       if let Ok(mut ip) = self.ports.try_recv("response") {
-          let reader:net_response::Reader  = ip.get_root()?;
+          let reader:net_http_response::Reader  = ip.get_root()?;
           let response = Response::from_string(reader.get_response()?);
           if let Some(req) = self.portal.requests.remove(&reader.get_id()) {
               req.respond(response);

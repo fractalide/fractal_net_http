@@ -1,15 +1,15 @@
 { stdenv, openssl
   , buildFractalideComponent
   , genName, upkeepers
-  , net_address
-  , net_request
-  , net_response
+  , net_http_address
+  , net_http_request
+  , net_http_response
   , ...}:
 
 buildFractalideComponent rec {
   name = genName ./.;
   src = ./.;
-  contracts = [ net_address net_request net_response ];
+  contracts = [ net_http_address net_http_request net_http_response ];
   buildInputs = [ openssl ];
   depsSha256 = "0dzs1ns9r649isfhf3rf039hazqvqxjkdv19s945w6xd34y0aapz";
 

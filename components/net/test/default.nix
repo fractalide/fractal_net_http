@@ -2,14 +2,14 @@
   , generic_text
   , net_http
   # contracts
-  , net_address
+  , net_http_address
   ,...}:
 
   buildFractalideSubnet rec {
    src = ./.;
    subnet = ''
    net_http(${net_http.http})
-   '${net_address}:(address="0.0.0.0:8000")' -> listen net_http()
+   '${net_http_address}:(address="0.0.0.0:8000")' -> listen net_http()
 
    '${generic_text}:(text="Hello world")' -> option world(${net_http.raw_text})
    '${generic_text}:(text="Hello fractalide")' -> option fractalide(${net_http.raw_text})
