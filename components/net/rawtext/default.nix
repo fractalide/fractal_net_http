@@ -10,7 +10,7 @@ buildFractalideComponent rec {
   name = genName ./.;
   src = ./.;
   contracts = [ generic_text net_http_request net_http_response ];
-  depsSha256 = "0fkqkrh9v4q4b13mr5bng434b6wf0w4d28v830vsqls8fz5qzanq";
+  depsSha256 = "06l4m7ividn2d99b5yrhs51ix4810f0rjyv9iird13rzk2qg2g8q";
 
   meta = with stdenv.lib; {
     description = "Component: build a response from a text option";
