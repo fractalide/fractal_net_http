@@ -25,7 +25,7 @@
      '';
 
    meta = with stdenv.lib; {
-    description = "Subnet: testing file for sjm";
+    description = "Subnet: testing file for http server";
     homepage = https://github.com/fractalide/fractalide/tree/master/components/test/sjm;
     license = with licenses; [ mpl20 ];
     maintainers = with upkeepers; [ dmichiels sjmackenzie];
