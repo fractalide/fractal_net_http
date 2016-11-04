@@ -4,10 +4,10 @@ extern crate rustfbp;
 extern crate capnp;
 
 component! {
-  net_raw_text, contracts(generic_text, net_http_request, net_http_response)
-  inputs(input: net_http_request),
+  net_raw_text, contracts(generic_text, request, response)
+  inputs(input: request),
   inputs_array(),
-  outputs(output: net_http_response),
+  outputs(output: response),
   outputs_array(),
   option(generic_text),
   acc(),
@@ -17,9 +17,9 @@ component! {
 
       let mut ip = IP::new();
       {
-          let mut builder: net_http_response::Builder = ip.init_root();
+          let mut builder: response::Builder = ip.init_root();
           let opt_reader: generic_text::Reader = opt_ip.get_root()?;
-          let reader: net_http_request::Reader = req_ip.get_root()?;
+          let reader: request::Reader = req_ip.get_root()?;
 
           builder.set_id(reader.get_id());
           builder.set_response(opt_reader.get_text()?);

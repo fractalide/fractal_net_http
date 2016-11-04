@@ -4,12 +4,14 @@
   , contracts ? fractalide.contracts
   , components ? fractalide.components}:
 let
-  publicComponentOrSubnet = allComponents.net_http;
   exeSubnet = allComponents.net_http;
-  allContracts = contracts // import ./contracts {inherit pkgs support allContracts;};
-  allComponents = components // import ./components {inherit pkgs support allContracts allComponents;};
+  publicNamespace = {components = fracComponents; contracts = fracContracts;};
+  fracContracts = import ./contracts {inherit pkgs support allContracts;};
+  fracComponents = import ./components {inherit pkgs support allContracts allComponents;};
+  allContracts = contracts // fracContracts;
+  allComponents = components // fracComponents;
   result = if fractalide == null
-    then publicComponentOrSubnet
+    then publicNamespace
     else import (<fractalide> + "/support/vm/") {inherit pkgs support;
       contracts = allContracts;
       components = allComponents;
