@@ -56,7 +56,7 @@ component! {
   inputs(listen: address, request: any, response: response),
   inputs_array(),
   outputs(),
-  outputs_array(GET: request, POST: request, PUT: request, DELETE: request),
+  outputs_array(GET: request, POST: request, PUT: request, DELETE: request, HEAD: request, CONNECT: request, OPTIONS: request, TRACE: request, PATCH: request),
   option(),
   acc(), portal(Portal => Portal::new())
   fn run(&mut self) -> Result<()> {
@@ -138,7 +138,8 @@ component! {
           let reader:response::Reader  = ip.get_root()?;
           let response = Response::from_string(reader.get_response()?);
           if let Some(req) = self.portal.requests.remove(&reader.get_id()) {
-              req.respond(response);
+              let resp = response.with_status_code(reader.get_status_code());
+              req.respond(resp);
           }
       }
       Ok(())
