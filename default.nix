@@ -1,25 +1,25 @@
-{ fractalide ? import <fractalide> {}
+{
+  fractalide ? import <fractalide> {}
   , pkgs ? fractalide.pkgs
   , support ? fractalide.support
   , contracts ? fractalide.contracts
   , components ? fractalide.components
-  , fractalide_user ? null
-  , config_file ? null}:
+  , subnet ? "test"
+}:
 let
-  exeSubnet = fracComponents.test;
-  publicNamespace = { components = fracComponents; contracts = fracContracts; };
-  fracContracts = import ./contracts {inherit pkgs support allContracts;};
-  fracComponents = import ./components {inherit pkgs support allContracts allComponents;};
-  allContracts = contracts // fracContracts;
-  allComponents = components // fracComponents // { encrypt = encrypt; };
-  encrypt = support.encryptComponent {
-      fractalide_user = fractalide_user;
-      keybase_config_file = config_file; };
-  result = if fractalide == null
-    then publicNamespace
-    else import (<fractalide> + "/support/vm/") {inherit pkgs support;
-      contracts = allContracts;
-      components = allComponents;
-      exeSubnet = exeSubnet;};
+  defaultSubnet = (builtins.head (pkgs.lib.attrVals [subnet] fractalComponents));
+  fractalContracts = import ./contracts {inherit pkgs support allContracts;};
+  fractalComponents = import ./components {inherit pkgs support allContracts allComponents;};
+  allContracts = contracts // fractalContracts;
+  allComponents = components // fractalComponents;
+  fvm = import (<fractalide> + "/support/fvm/") {inherit pkgs support;
+    contracts = contracts;
+    components = components;
+  };
+  test = pkgs.writeTextFile {
+    name = defaultSubnet.name;
+    text = "${fvm}/bin/fvm ${defaultSubnet}";
+    executable = true;
+  };
 in
-  result
+{ components = fractalComponents; contracts = fractalContracts; test = test; service = ./service.nix; }
