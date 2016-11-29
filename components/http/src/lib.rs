@@ -63,7 +63,7 @@ component! {
       if let Ok(mut ip) = self.ports.try_recv("listen") {
           // TODO :: clean the portal
           {
-              let reader: address::Reader = ip.get_root()?;
+              let reader: address::Reader = ip.read_contract()?;
               self.portal.listen(reader.get_address()?, self.ports.get_sender("request")?)?;
           }
       }
@@ -84,7 +84,7 @@ component! {
                   // Build the request
                   let mut ip = IP::new();
                   {
-                      let mut builder: request::Builder = ip.init_root();
+                      let mut builder: request::Builder = ip.build_reader();
                       // ID
                       builder.set_id(self.portal.id);
                       // URL
@@ -135,7 +135,7 @@ component! {
       }
 
       if let Ok(mut ip) = self.ports.try_recv("response") {
-          let reader:response::Reader  = ip.get_root()?;
+          let reader:response::Reader  = ip.read_contract()?;
           let response = Response::from_string(reader.get_response()?);
           if let Some(req) = self.portal.requests.remove(&reader.get_id()) {
               let resp = response.with_status_code(reader.get_status_code());

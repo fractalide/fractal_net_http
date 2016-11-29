@@ -17,9 +17,9 @@ component! {
 
       let mut ip = IP::new();
       {
-          let mut builder: response::Builder = ip.init_root();
-          let opt_reader: generic_text::Reader = opt_ip.get_root()?;
-          let reader: request::Reader = req_ip.get_root()?;
+          let mut builder: response::Builder = ip.build_reader();
+          let opt_reader: generic_text::Reader = opt_ip.read_contract()?;
+          let reader: request::Reader = req_ip.read_contract()?;
 
           builder.set_id(reader.get_id());
           builder.set_response(opt_reader.get_text()?);
