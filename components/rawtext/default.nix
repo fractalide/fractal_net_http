@@ -1,21 +1,9 @@
-{ stdenv, openssl
-  , buildFractalideComponent
-  , genName, upkeepers
-  , generic_text
-  , request
-  , response
-  , ...}:
+{ component, contracts, crates, pkgs }:
 
-buildFractalideComponent rec {
-  name = genName ./.;
+component {
   src = ./.;
-  contracts = [ generic_text request response ];
+  contracts = with contracts; [ generic_text request response ];
+  crates = with crates; [ ];
+  osdeps = with pkgs; [ ];
   depsSha256 = "0pzvnvhmzv1bbp5gfgmak3bsizhszw4bal0vaz30xmmd5yx5ciqj";
-
-  meta = with stdenv.lib; {
-    description = "Component: build a response from a text option";
-    homepage = https://github.com/fractalide/fractalide/tree/master/components/maths/boolean/nand;
-    license = with licenses; [ mpl20 ];
-    maintainers = with upkeepers; [ dmichiels sjmackenzie];
-  };
 }

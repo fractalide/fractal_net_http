@@ -84,7 +84,7 @@ component! {
                   // Build the request
                   let mut ip = IP::new();
                   {
-                      let mut builder: request::Builder = ip.build_reader();
+                      let mut builder: request::Builder = ip.build_contract();
                       // ID
                       builder.set_id(self.portal.id);
                       // URL

@@ -8,10 +8,15 @@
 }:
 let
   defaultSubnet = (builtins.head (pkgs.lib.attrVals [subnet] fractalComponents));
-  fractalContracts = import ./contracts {inherit pkgs support allContracts;};
-  fractalComponents = import ./components {inherit pkgs support allContracts allComponents;};
-  allContracts = contracts // fractalContracts;
-  allComponents = components // fractalComponents;
+  buffet = {
+    components = components // fractalComponents;
+    contracts = contracts // fractalContracts;
+    support = support;
+    crates = "crates_to_come";
+    pkgs = pkgs;
+  };
+  fractalContracts = import ./contracts {inherit buffet; };
+  fractalComponents = import ./components {inherit buffet; };
   fvm = import (<fractalide> + "/support/fvm/") {inherit pkgs support;
     contracts = contracts;
     components = components;

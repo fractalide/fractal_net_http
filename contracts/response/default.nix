@@ -1,8 +1,9 @@
-{stdenv, buildFractalideContract, upkeepers, ...}:
+{ contract, contracts }:
 
-buildFractalideContract rec {
+contract {
   src = ./.;
-  contract = ''
+  importedContracts = with contracts; [ ];
+  schema = with contracts; ''
   @0xb10b096b4e676688;
 
   struct Response {
@@ -11,11 +12,4 @@ buildFractalideContract rec {
     statusCode @2 :UInt32 = 200;
   }
   '';
-
-  meta = with stdenv.lib; {
-    description = "Contract: Describes an http response";
-    homepage = https://github.com/fractalide/fractalide/tree/master/contracts/maths/boolean;
-    license = with licenses; [ mpl20 ];
-    maintainers = with upkeepers; [ dmichiels sjmackenzie];
-  };
 }

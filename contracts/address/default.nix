@@ -1,19 +1,13 @@
-{stdenv, buildFractalideContract, upkeepers, ...}:
+{ contract, contracts }:
 
-buildFractalideContract rec {
+contract {
   src = ./.;
-  contract = ''
+  importedContracts = with contracts; [ ];
+  schema = with contracts; ''
   @0x8bb5b850bcfc82e6;
 
   struct Address {
     address @0 :Text;
   }
   '';
-
-  meta = with stdenv.lib; {
-    description = "Contract: Describes a simple net address";
-    homepage = https://github.com/fractalide/fractalide/tree/master/contracts/maths/boolean;
-    license = with licenses; [ mpl20 ];
-    maintainers = with upkeepers; [ dmichiels sjmackenzie];
-  };
 }

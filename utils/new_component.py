@@ -160,7 +160,7 @@ def write_simple_outputs_extractor(port, contract):
     return """
     let mut """ + out_ip + """ = IP::new();
     {
-      let mut variable = """ + out_ip + """.build_reader::<""" + contract + """::Builder>();
+      let mut variable = """ + out_ip + """.build_contract::<""" + contract + """::Builder>();
       variable.set_XXX(YYY); // read contract: """ + contract + """ to replace XXX
     }"""
 
@@ -175,7 +175,7 @@ def write_outputs_array_extractor(port, contract):
     return """
     let mut """ + out_ip + """ = IP::new();
     {
-      let mut variable = """ + out_ip + """.build_reader::<""" + contract + """::Builder>();
+      let mut variable = """ + out_ip + """.build_contract::<""" + contract + """::Builder>();
       variable.set_XXX(YYY); // read contract: """ + contract + """ to replace XXX
     }"""
 

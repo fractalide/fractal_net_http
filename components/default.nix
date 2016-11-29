@@ -1,6 +1,7 @@
-{ pkgs, support, allContracts, allComponents, ... }:
+{ buffet }:
+
 let
-callPackage = pkgs.lib.callPackageWith (pkgs // support // allContracts // allComponents);
+callPackage = buffet.pkgs.lib.callPackageWith (buffet // buffet.support );
 self = rec { # use one line only to insert a component (utils/new_component.py sorts this list)
   http = callPackage ./http {};
   rawtext = callPackage ./rawtext {};
