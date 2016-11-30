@@ -4,6 +4,7 @@
   , support ? fractalide.support
   , contracts ? fractalide.contracts
   , components ? fractalide.components
+  , crates ? fractalide.crates
   , subnet ? "test"
 }:
 let
@@ -12,7 +13,7 @@ let
     components = components // fractalComponents;
     contracts = contracts // fractalContracts;
     support = support;
-    crates = "crates_to_come";
+    crates = crates;
     pkgs = pkgs;
   };
   fractalContracts = import ./contracts {inherit buffet; };
@@ -20,6 +21,7 @@ let
   fvm = import (<fractalide> + "/support/fvm/") {inherit pkgs support;
     contracts = contracts;
     components = components;
+    crates = crates;
   };
   test = pkgs.writeTextFile {
     name = defaultSubnet.name;
