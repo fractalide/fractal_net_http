@@ -1,9 +1,9 @@
-{ contract, contracts }:
+{ edge, edges }:
 
-contract {
+edge {
   src = ./.;
-  contracts =  with contracts; [ ];
-  schema = with contracts; ''
+  edges =  with edges; [];
+  schema = with edges; ''
   @0x992391bf15f6322d;
 
   struct Request {

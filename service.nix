@@ -4,20 +4,20 @@ let
   cfg = config.services.fractalide.net_http;
   fractalide = import <fractalide> {};
   support = fractalide.support;
-  contracts = fractalide.contracts;
-  components = fractalide.components;
-  fractal = import ./default.nix { inherit pkgs support contracts components;
+  edges = fractalide.edges;
+  nodes = fractalide.nodes;
+  fractal = import ./default.nix { inherit pkgs support edges nodes;
     fractalide = null;
   };
-  serviceSubnet = support.buildFractalideSubnet rec {
+  serviceSubgraph = support.subgraph rec {
     src = ./.;
     name = "net_http_service";
     subnet = ''
-    '${contracts.net_http_contracts.address}:(address="${cfg.bindAddress}:${toString cfg.port}")' -> listen net_http(${fractal.components.net_http})
-    '${contracts.path}:(path="${cfg.dbPath}/${cfg.dbName}")' -> db_path net_http()
+    '${edges.net_http_edges.address}:(address="${cfg.bindAddress}:${toString cfg.port}")' -> listen net_http(${fractal.nodes.net_http})
+    '${edges.path}:(path="${cfg.dbPath}/${cfg.dbName}")' -> db_path net_http()
     '';
   };
-  fvm = import (<fractalide> + "/support/fvm/") {inherit pkgs support contracts components;};
+  fvm = import (<fractalide> + "/support/fvm/") {inherit pkgs support edges nodes;};
 in
 {
   options.services.fractalide.net_http = {

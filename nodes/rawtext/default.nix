@@ -1,8 +1,8 @@
-{ component, contracts, crates, pkgs }:
+{ agent, edges, crates, pkgs }:
 
-component {
+agent {
   src = ./.;
-  contracts = with contracts; [ generic_text request response ];
+  edges = with edges; [ generic_text request response ];
   crates = with crates; [ ];
   osdeps = with pkgs; [ ];
   depsSha256 = "0pzvnvhmzv1bbp5gfgmak3bsizhszw4bal0vaz30xmmd5yx5ciqj";

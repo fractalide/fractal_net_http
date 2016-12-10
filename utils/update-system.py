@@ -38,7 +38,7 @@ def query_yes_no(question, default="no"):
                              "(or 'y' or 'n').\n")
 
 result = query_yes_no(
-"This script will update the dependencies of all your rust components.\n\
+"This script will update the dependencies of all your rust nodes.\n\
 Proceed?")
 
 if result == False:
@@ -48,27 +48,27 @@ def generate_component_name( path ):
   name_list = path[14:].split("/")
   return '_'.join(map(str, name_list))
 
-# update all the components via cargo
+# update all the nodes via cargo
 print "\n[*] Updating every Cargo.toml via cargo"
-for root, dirs, files in os.walk("../components"):
+for root, dirs, files in os.walk("../nodes"):
   cmd = "cargo generate-lockfile --manifest-path " + root + "/Cargo.toml"
   args = shlex.split(cmd)
   if "Cargo.toml" in files:
     print "[ ] - " + root+"/Cargo.toml"
     output, error = subprocess.Popen(args, stdout = subprocess.PIPE, stderr= subprocess.PIPE).communicate()
 
-print "[*] Checking Rust components for new depsSha256"
-for root, dirs, files in os.walk("../components"):
+print "[*] Checking Rust nodes for new depsSha256"
+for root, dirs, files in os.walk("../nodes"):
   if "Cargo.toml" in files:
     name = generate_component_name(root)
-    cmd =  "nix-build -A components." + name  + repo
+    cmd =  "nix-build -A nodes." + name  + repo
     print "[ ] - " + name + " path: " + root
     args = shlex.split(cmd)
     output, error = subprocess.Popen(args, stdout = subprocess.PIPE, stderr= subprocess.PIPE, cwd = "../").communicate()
     if error:
       print error
       if re.search('.*not found', error):
-        print error + "\nerror: folder hierarchy != attribute name in components/default.nix. Please fix it, commit it, then run again."
+        print error + "\nerror: folder hierarchy != attribute name in nodes/default.nix. Please fix it, commit it, then run again."
         exit()
       if re.search('.*has wrong length for hash type.*', error):
         print error

@@ -51,8 +51,8 @@ impl Portal {
     }
 }
 
-component! {
-  net_http, contracts(address, request, response)
+agent! {
+  net_http, edges(address, request, response)
   inputs(listen: address, request: any, response: response),
   inputs_array(),
   outputs(),
@@ -63,7 +63,7 @@ component! {
       if let Ok(mut ip) = self.ports.try_recv("listen") {
           // TODO :: clean the portal
           {
-              let reader: address::Reader = ip.read_contract()?;
+              let reader: address::Reader = ip.read_schema()?;
               self.portal.listen(reader.get_address()?, self.ports.get_sender("request")?)?;
           }
       }
@@ -84,7 +84,7 @@ component! {
                   // Build the request
                   let mut ip = IP::new();
                   {
-                      let mut builder: request::Builder = ip.build_contract();
+                      let mut builder: request::Builder = ip.build_schema();
                       // ID
                       builder.set_id(self.portal.id);
                       // URL
@@ -99,10 +99,10 @@ component! {
                       }
                       // Method
                       match *request.method() {
-                          tiny_http::Method::Get => builder.set_method(contract_capnp::Method::Get),
-                          tiny_http::Method::Post => builder.set_method(contract_capnp::Method::Post),
-                          tiny_http::Method::Put => builder.set_method(contract_capnp::Method::Put),
-                          tiny_http::Method::Delete => builder.set_method(contract_capnp::Method::Delete),
+                          tiny_http::Method::Get => builder.set_method(edge_capnp::Method::Get),
+                          tiny_http::Method::Post => builder.set_method(edge_capnp::Method::Post),
+                          tiny_http::Method::Put => builder.set_method(edge_capnp::Method::Put),
+                          tiny_http::Method::Delete => builder.set_method(edge_capnp::Method::Delete),
                           _ => {}
                           // TODO : handle well other method
                           // Head,
@@ -135,7 +135,7 @@ component! {
       }
 
       if let Ok(mut ip) = self.ports.try_recv("response") {
-          let reader:response::Reader  = ip.read_contract()?;
+          let reader:response::Reader  = ip.read_schema()?;
           let response = Response::from_string(reader.get_response()?);
           if let Some(req) = self.portal.requests.remove(&reader.get_id()) {
               let resp = response.with_status_code(reader.get_status_code());

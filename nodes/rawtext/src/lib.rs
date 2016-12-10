@@ -3,8 +3,8 @@
 extern crate rustfbp;
 extern crate capnp;
 
-component! {
-  net_raw_text, contracts(generic_text, request, response)
+agent! {
+  net_raw_text, edges(generic_text, request, response)
   inputs(input: request),
   inputs_array(),
   outputs(output: response),
@@ -17,9 +17,9 @@ component! {
 
       let mut ip = IP::new();
       {
-          let mut builder: response::Builder = ip.build_contract();
-          let opt_reader: generic_text::Reader = opt_ip.read_contract()?;
-          let reader: request::Reader = req_ip.read_contract()?;
+          let mut builder: response::Builder = ip.build_schema();
+          let opt_reader: generic_text::Reader = opt_ip.read_schema()?;
+          let reader: request::Reader = req_ip.read_schema()?;
 
           builder.set_id(reader.get_id());
           builder.set_response(opt_reader.get_text()?);

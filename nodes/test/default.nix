@@ -1,8 +1,8 @@
-{ subnet, components, contracts }:
+{ subgraph, nodes, edges }:
 
-subnet {
+subgraph {
   src = ./.;
-  flowscript = with components; with contracts; ''
+  flowscript = with nodes; with edges; ''
   http(${http})
   '${address}:(address="0.0.0.0:8000")' -> listen http()
 

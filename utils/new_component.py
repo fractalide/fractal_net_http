@@ -9,7 +9,7 @@
 # * writing the default.nix file
 # * writing the lib.rs file
 # * then runs `cargo generate-lockfile` on the component to create the lockfile
-# * inserting the component into components/default.nix
+# * inserting the component into nodes/default.nix
 
 import os.path
 import sys
@@ -39,7 +39,7 @@ crate-type = ["dylib"]
 """ + write_cargo_deps(cargo_deps)
     return cargo_toml_template
 
-def write_contracts(ports, include_type):
+def write_edges(ports, include_type):
     contracts = ""
     contract_set = set()
     for port_type in ports:
@@ -81,19 +81,19 @@ def write_builtins(external_dependencies):
 def create_default_nix (component_description, ports, external_dependencies):
     default_nix = """
 { stdenv, buildFractalideComponent, genName, upkeepers
-""" + write_contracts(ports, "nix_header")  + """
+""" + write_edges(ports, "nix_header")  + """
 """ + write_external_dependencies(external_dependencies) + """
 , ...}:
 
 buildFractalideComponent rec {
   name = genName ./.;
   src = ./.;
-  contracts = [""" + write_contracts(ports, "nix_contracts") + """];
+  contracts = [""" + write_edges(ports, "nix_contracts") + """];
   depsSha256 = "2m6n74fm7k99pp13j5d5yyp4j0znc0s10958hhyyh3shq9rj8862";
   """ + write_builtins(external_dependencies) + """
   meta = with stdenv.lib; {
     description = "Component: """ + component_description + """";
-    homepage = https://gitlab.com/fractalide/fractalide/tree/master/components/maths/boolean/nand;
+    homepage = https://gitlab.com/fractalide/fractalide/tree/master/nodes/maths/boolean/nand;
     license = with licenses; [ mpl20 ];
     maintainers = with upkeepers; [ dmichiels sjmackenzie];
   };
@@ -129,7 +129,7 @@ def write_simple_input_extractor(port, contract):
     return """
     let mut """ + ip + """ = self.ports.recv(\"""" + port + """\")?;
     let """ + port + """ = {
-        let """ + reader + """: """ + contract + """::Reader = """ + ip + """.read_contract()?;
+        let """ + reader + """: """ + contract + """::Reader = """ + ip + """.read_schema()?;
         """ + reader + """.get_XXX() // read contract: """ + contract + """ to replace XXX
     };"""
 
@@ -145,7 +145,7 @@ def write_inputs_array_extractor(port, contract):
     return """
     let mut """ + ip + """ = self.ports.recv(\"""" + port + """\")?;
     let """ + port + """ = {
-        let """ + reader + """: """ + contract + """::Reader = """ + ip + """.read_contract()?;
+        let """ + reader + """: """ + contract + """::Reader = """ + ip + """.read_schema()?;
         """ + reader + """.get_XXX() // read contract: """ + contract + """ to replace XXX
     };"""
 
@@ -160,7 +160,7 @@ def write_simple_outputs_extractor(port, contract):
     return """
     let mut """ + out_ip + """ = IP::new();
     {
-      let mut variable = """ + out_ip + """.build_contract::<""" + contract + """::Builder>();
+      let mut variable = """ + out_ip + """.build_schema::<""" + contract + """::Builder>();
       variable.set_XXX(YYY); // read contract: """ + contract + """ to replace XXX
     }"""
 
@@ -175,7 +175,7 @@ def write_outputs_array_extractor(port, contract):
     return """
     let mut """ + out_ip + """ = IP::new();
     {
-      let mut variable = """ + out_ip + """.build_contract::<""" + contract + """::Builder>();
+      let mut variable = """ + out_ip + """.build_schema::<""" + contract + """::Builder>();
       variable.set_XXX(YYY); // read contract: """ + contract + """ to replace XXX
     }"""
 
@@ -233,8 +233,8 @@ def write_sends(ports):
 
 def create_lib_rs(component_name, ports, cargo_deps, extra_ports):
     lib_rs = write_externs(cargo_deps) + """
-component! {
-  """ + component_name + """, contracts(""" + write_contracts(ports, "rust_contracts") + """)
+agent! {
+  """ + component_name + """, edges(""" + write_edges(ports, "rust_contracts") + """)
   """ + write_input_output_array_ports(ports) + "\n" + write_extra_ports(extra_ports) + """
   fn run(&mut self) -> Result<()> {
     """ + write_ip_extractors(ports) + write_sends(ports) + """
@@ -247,7 +247,7 @@ component! {
 def create_paths(component_name):
     folders = component_name.replace("_","/")
     folders_list = folders.split(os.sep)
-    root = "../components"
+    root = "../nodes"
     path = root + "/" + folders
     if os.path.exists(path + "/default.nix"):
         sys.exit("*** Aborted: component already exists. ***")
@@ -271,46 +271,46 @@ def write_file(path, contents):
 
 def insert_component_into_filesystem(component_name, cargo_toml, default_nix, lib_rs):
     path = create_paths(component_name)
-    write_file("../components/" + path + "/" + "default.nix", default_nix)
-    write_file("../components/" + path + "/" + "Cargo.toml", cargo_toml)
-    write_file("../components/" + path + "/src/lib.rs", lib_rs)
+    write_file("../nodes/" + path + "/" + "default.nix", default_nix)
+    write_file("../nodes/" + path + "/" + "Cargo.toml", cargo_toml)
+    write_file("../nodes/" + path + "/src/lib.rs", lib_rs)
     return path
 
 def insert_component_into_default_nix(component_name, path):
     header = []
-    components = []
+    nodes = []
     footer = []
-    with open('../components/default.nix') as f:
+    with open('../nodes/default.nix') as f:
         lines = f.read().splitlines()
         mode = "header"
         for line in lines:
             if mode == "header":
                 header.append(line)
                 if line == "self = rec { # use one line only to insert a component (utils/new_component.py sorts this list)":
-                    mode = "components"
+                    mode = "nodes"
                     continue
-            if mode == "components":
+            if mode == "nodes":
                 if line == "}; # use one line only to insert a component (utils/new_component.py sorts this list)":
                     mode = "footer"
                     footer.append(line)
                     continue
-                components.append(line)
+                nodes.append(line)
             if mode == "footer":
                 footer.append(line)
-        components.append("  " + component_name + " = callPackage ./" + path + " {};")
-    components.sort()
-    with open('../components/default.nix', 'r+') as f:
+        nodes.append("  " + component_name + " = callPackage ./" + path + " {};")
+    nodes.sort()
+    with open('../nodes/default.nix', 'r+') as f:
         f.seek(0)
         for line in header:
             f.write(line + "\n")
-        for line in components:
+        for line in nodes:
             f.write(line + "\n")
         for line in footer:
             f.write(line + "\n")
         f.truncate()
 
 def generate_lockfile(path):
-      cmd = "cargo generate-lockfile --manifest-path " + "../components/" + path + "/Cargo.toml"
+      cmd = "cargo generate-lockfile --manifest-path " + "../nodes/" + path + "/Cargo.toml"
       args = shlex.split(cmd)
       output, error = subprocess.Popen(args, stdout = subprocess.PIPE, stderr= subprocess.PIPE).communicate()
 
