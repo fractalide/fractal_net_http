@@ -1,29 +1,21 @@
 {
   fractalide ? import <fractalide> {}
-  , pkgs ? fractalide.pkgs
-  , support ? fractalide.support
-  , edges ? fractalide.edges
-  , nodes ? fractalide.nodes
-  , crates ? fractalide.crates
+  , buffet ? fractalide.buffet
   , node ? "test"
 }:
 let
-  defaultNode = (builtins.head (pkgs.lib.attrVals [node] fractalNodes));
-  buffet = {
-    nodes = nodes // fractalNodes;
-    edges = edges // fractalEdges;
-    support = support;
-    crates = crates;
-    pkgs = pkgs;
+  defaultNode = (builtins.head (buffet.pkgs.lib.attrVals [node] fractalNodes));
+  newBuffet = {
+    nodes = buffet.nodes // fractalNodes;
+    edges = buffet.edges // fractalEdges;
+    support = buffet.support;
+    crates = buffet.crates;
+    pkgs = buffet.pkgs;
   };
-  fractalEdges = import ./edges { inherit buffet; };
-  fractalNodes = import ./nodes { inherit buffet; };
-  fvm = import (<fractalide> + "/support/fvm/") {inherit pkgs support;
-    edges = edges;
-    nodes = nodes;
-    crates = crates;
-  };
-  test = pkgs.writeTextFile {
+  fractalEdges = import ./edges { buffet = newBuffet; };
+  fractalNodes = import ./nodes { buffet = newBuffet; };
+  fvm = import (<fractalide> + "/support/fvm/") { buffet = newBuffet; };
+  test = buffet.pkgs.writeTextFile {
     name = defaultNode.name;
     text = "${fvm}/bin/fvm ${defaultNode}";
     executable = true;
