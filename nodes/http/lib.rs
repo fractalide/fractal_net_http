@@ -1,4 +1,3 @@
-#![feature(question_mark)]
 #[macro_use]
 extern crate rustfbp;
 extern crate capnp;
@@ -30,7 +29,7 @@ impl Portal {
         }
     }
 
-    fn listen(&mut self, address: &str, sender: IPSender) -> Result<()> {
+    fn listen(&mut self, address: &str, sender: MsgSender) -> Result<()> {
         let server = Server::http(address).unwrap();
         let (s, r) = channel();
         let (s_recv, r_recv) = channel();
@@ -41,7 +40,7 @@ impl Portal {
                 }
 
                 s_recv.send(request).unwrap();
-                sender.send(IP::new()).unwrap();
+                sender.send(Msg::new()).unwrap();
             }
         });
 
@@ -52,23 +51,29 @@ impl Portal {
 }
 
 agent! {
-  net_http, edges(address, request, response)
-  inputs(listen: address, request: any, response: response),
-  inputs_array(),
-  outputs(),
-  outputs_array(GET: request, POST: request, PUT: request, DELETE: request, HEAD: request, CONNECT: request, OPTIONS: request, TRACE: request, PATCH: request),
-  option(),
-  acc(), portal(Portal => Portal::new())
-  fn run(&mut self) -> Result<()> {
-      if let Ok(mut ip) = self.ports.try_recv("listen") {
+  input(listen: address
+      , request: any
+      , response: response),
+  outarr(GET: request
+      , POST: request
+      , PUT: request
+      , DELETE: request
+      , HEAD: request
+      , CONNECT: request
+      , OPTIONS: request
+      , TRACE: request
+      , PATCH: request),
+  portal(Portal => Portal::new()),
+  fn run(&mut self) -> Result<Signal> {
+      if let Ok(mut msg) = self.input.listen.try_recv() {
           // TODO :: clean the portal
           {
-              let reader: address::Reader = ip.read_schema()?;
-              self.portal.listen(reader.get_address()?, self.ports.get_sender("request")?)?;
+              let reader: address::Reader = msg.read_schema()?;
+              self.portal.listen(reader.get_address()?, self.input.request.get_sender()?)?;
           }
       }
 
-      if let Ok(ip) = self.ports.try_recv("request") {
+      if let Ok(msg) = self.input.request.try_recv() {
 
           if let Some(ref recv) = self.portal.recv {
               let mut request = recv.recv()?;
@@ -82,9 +87,9 @@ agent! {
                   }
 
                   // Build the request
-                  let mut ip = IP::new();
+                  let mut msg = Msg::new();
                   {
-                      let mut builder: request::Builder = ip.build_schema();
+                      let mut builder: request::Builder = msg.build_schema();
                       // ID
                       builder.set_id(self.portal.id);
                       // URL
@@ -124,7 +129,7 @@ agent! {
                       builder.set_content(&content);
                   }
 
-                  self.ports.send_array(request.method().as_str(), &select_out, ip);
+                  self.ports.send_array(request.method().as_str(), &select_out, msg);
                   self.portal.requests.insert(self.portal.id, request);
               } else {
                   let response = Response::from_string("")
@@ -134,15 +139,15 @@ agent! {
           }
       }
 
-      if let Ok(mut ip) = self.ports.try_recv("response") {
-          let reader:response::Reader  = ip.read_schema()?;
+      if let Ok(mut msg) = self.input.response.try_recv() {
+          let reader:response::Reader  = msg.read_schema()?;
           let response = Response::from_string(reader.get_response()?);
           if let Some(req) = self.portal.requests.remove(&reader.get_id()) {
               let resp = response.with_status_code(reader.get_status_code());
               req.respond(resp);
           }
       }
-      Ok(())
+      Ok(End)
   }
 }
 
