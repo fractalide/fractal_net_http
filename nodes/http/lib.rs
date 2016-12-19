@@ -6,9 +6,8 @@ extern crate regex;
 
 use regex::RegexSet;
 
-use tiny_http::{Server, Response, Request};
+use tiny_http::{Server, Response, Request, Method};
 
-use std::sync::mpsc::channel;
 use std::sync::mpsc::Receiver;
 use std::thread;
 
@@ -69,7 +68,7 @@ agent! {
           // TODO :: clean the portal
           {
               let reader: address::Reader = msg.read_schema()?;
-              self.portal.listen(reader.get_address()?, self.input.request.get_sender()?)?;
+              self.portal.listen(reader.get_address()?, self.input.request.get_sender())?;
           }
       }
 
@@ -78,7 +77,7 @@ agent! {
           if let Some(ref recv) = self.portal.recv {
               let mut request = recv.recv()?;
 
-              let select_out = get_output_port(&self, request.method().as_str(), request.url())?;
+              let select_out = get_output_port(&self, request.method(), request.url())?;
               if let Some(select_out) = select_out {
                   if self.portal.id == u64::max_value() {
                       self.portal.id = 0;
@@ -129,7 +128,7 @@ agent! {
                       builder.set_content(&content);
                   }
 
-                  self.ports.send_array(request.method().as_str(), &select_out, msg);
+                  select_out.send(msg)?;
                   self.portal.requests.insert(self.portal.id, request);
               } else {
                   let response = Response::from_string("")
@@ -151,13 +150,27 @@ agent! {
   }
 }
 
-fn get_output_port(comp: &net_http, port: &str, url: &str) -> Result<Option<String>> {
-    let mut array = comp.ports.get_output_selections(port)?;
+fn get_output_port(agent: &ThisAgent, port: &Method, url: &str) -> Result<Option<MsgSender>> {
+    let output = match *port {
+	tiny_http::Method::Get => { &agent.outarr.GET },
+	tiny_http::Method::Put => { &agent.outarr.PUT },
+	tiny_http::Method::Post => { &agent.outarr.POST },
+	tiny_http::Method::Delete => { &agent.outarr.DELETE },
+	tiny_http::Method::Head => { &agent.outarr.HEAD },
+	tiny_http::Method::Connect => { &agent.outarr.CONNECT },
+	tiny_http::Method::Options => { &agent.outarr.OPTIONS },
+	tiny_http::Method::Trace => { &agent.outarr.TRACE },
+	tiny_http::Method::Patch => { &agent.outarr.PATCH },
+	_ => { unreachable!() },
+    };
+
+    let mut array: Vec<&String> = output.keys().collect();
     array.sort_by(|a, b| b.cmp(a));
     let regex = RegexSet::new(&array).or(Err(result::Error::Misc("bad regex".into())))?;
-    let matches: Vec<_> = regex.matches(url).into_iter().collect();
-    if let Some(select) = matches.first() {
-        return Ok(Some(array[*select].to_string()));
+    let matches = regex.matches(url);
+    if let Some(select) = matches.iter().next() {
+        let name = array.get(select).expect("unreachable");
+        return Ok(Some(output.get(*name).expect("unreachable").clone()));
     } else {
         Ok(None)
     }

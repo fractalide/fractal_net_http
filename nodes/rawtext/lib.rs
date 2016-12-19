@@ -4,29 +4,25 @@ extern crate rustfbp;
 extern crate capnp;
 
 agent! {
-  net_raw_text, edges(generic_text, request, response)
-  inputs(input: request),
-  inputs_array(),
-  outputs(output: response),
-  outputs_array(),
+  input(input: request),
+  output(output: response),
   option(generic_text),
-  acc(),
-  fn run(&mut self) -> Result<()> {
-      let mut opt_ip = self.recv_option();
-      let mut req_ip = self.ports.recv("input")?;
+  fn run(&mut self) -> Result<Signal> {
+      let mut opt_msg = self.recv_option();
+      let mut req_msg = self.input.input.recv()?;
 
-      let mut ip = IP::new();
+      let mut msg = Msg::new();
       {
-          let mut builder: response::Builder = ip.build_schema();
-          let opt_reader: generic_text::Reader = opt_ip.read_schema()?;
-          let reader: request::Reader = req_ip.read_schema()?;
+          let mut builder: response::Builder = msg.build_schema();
+          let opt_reader: generic_text::Reader = opt_msg.read_schema()?;
+          let reader: request::Reader = req_msg.read_schema()?;
 
           builder.set_id(reader.get_id());
           builder.set_response(opt_reader.get_text()?);
       }
 
-      self.ports.send("output", ip)?;
+      self.output.output.send(msg)?;
 
-      Ok(())
+      Ok(End)
   }
 }
