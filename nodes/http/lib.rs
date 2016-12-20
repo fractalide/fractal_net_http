@@ -51,6 +51,7 @@ impl Portal {
 
 agent! {
   input(listen: address
+      , halt: any
       , request: any
       , response: response),
   outarr(GET: request
@@ -70,6 +71,10 @@ agent! {
               let reader: address::Reader = msg.read_schema()?;
               self.portal.listen(reader.get_address()?, self.input.request.get_sender())?;
           }
+      }
+
+      if let Ok(_) = self.input.halt.try_recv() {
+          return Ok(End);
       }
 
       if let Ok(msg) = self.input.request.try_recv() {
@@ -146,7 +151,7 @@ agent! {
               req.respond(resp);
           }
       }
-      Ok(End)
+      Ok(Continue)
   }
 }
 
