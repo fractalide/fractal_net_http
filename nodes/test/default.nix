@@ -2,6 +2,7 @@
 
 subgraph {
   src = ./.;
+  edges = with edges; [ address generic_text ];
   flowscript = with nodes; with edges; ''
   http(${http})
   '${address}:(address="0.0.0.0:8000")' -> listen http()
