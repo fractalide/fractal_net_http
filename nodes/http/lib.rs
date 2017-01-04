@@ -50,25 +50,25 @@ impl Portal {
 }
 
 agent! {
-  input(listen: address
+  input(listen: net_http_address
       , halt: any
       , request: any
-      , response: response),
-  outarr(GET: request
-      , POST: request
-      , PUT: request
-      , DELETE: request
-      , HEAD: request
-      , CONNECT: request
-      , OPTIONS: request
-      , TRACE: request
-      , PATCH: request),
+      , response: net_http_response),
+  outarr(GET: net_http_request
+      , POST: net_http_request
+      , PUT: net_http_request
+      , DELETE: net_http_request
+      , HEAD: net_http_request
+      , CONNECT: net_http_request
+      , OPTIONS: net_http_request
+      , TRACE: net_http_request
+      , PATCH: net_http_request),
   portal(Portal => Portal::new()),
   fn run(&mut self) -> Result<Signal> {
       if let Ok(mut msg) = self.input.listen.try_recv() {
           // TODO :: clean the portal
           {
-              let reader: address::Reader = msg.read_schema()?;
+              let reader: net_http_address::Reader = msg.read_schema()?;
               self.portal.listen(reader.get_address()?, self.input.request.get_sender())?;
           }
       }
@@ -93,7 +93,7 @@ agent! {
                   // Build the request
                   let mut msg = Msg::new();
                   {
-                      let mut builder: request::Builder = msg.build_schema();
+                      let mut builder: net_http_request::Builder = msg.build_schema();
                       // ID
                       builder.set_id(self.portal.id);
                       // URL
@@ -108,10 +108,10 @@ agent! {
                       }
                       // Method
                       match *request.method() {
-                          tiny_http::Method::Get => builder.set_method(edge_capnp::Method::Get),
-                          tiny_http::Method::Post => builder.set_method(edge_capnp::Method::Post),
-                          tiny_http::Method::Put => builder.set_method(edge_capnp::Method::Put),
-                          tiny_http::Method::Delete => builder.set_method(edge_capnp::Method::Delete),
+                          tiny_http::Method::Get => builder.set_method(edge_capnp::NetHttpRequestMethod::Get),
+                          tiny_http::Method::Post => builder.set_method(edge_capnp::NetHttpRequestMethod::Post),
+                          tiny_http::Method::Put => builder.set_method(edge_capnp::NetHttpRequestMethod::Put),
+                          tiny_http::Method::Delete => builder.set_method(edge_capnp::NetHttpRequestMethod::Delete),
                           _ => {}
                           // TODO : handle well other method
                           // Head,
@@ -144,7 +144,7 @@ agent! {
       }
 
       if let Ok(mut msg) = self.input.response.try_recv() {
-          let reader:response::Reader  = msg.read_schema()?;
+          let reader: net_http_response::Reader = msg.read_schema()?;
           let response = Response::from_string(reader.get_response()?);
           if let Some(req) = self.portal.requests.remove(&reader.get_id()) {
               let resp = response.with_status_code(reader.get_status_code());
