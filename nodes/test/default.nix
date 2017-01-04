@@ -2,10 +2,10 @@
 
 subgraph {
   src = ./.;
-  edges = with edges; [ address prim_text ];
+  edges = with edges; [ net_http_address prim_text ];
   flowscript = with nodes; with edges; ''
   http(${http})
-  '${address}:(address="0.0.0.0:8000")' -> listen http()
+  '${net_http_address}:(address="0.0.0.0:8000")' -> listen http()
 
   '${prim_text}:(text="Hello world")' -> option world(${rawtext})
   '${prim_text}:(text="Hello fractalide")' -> option fractalide(${rawtext})
