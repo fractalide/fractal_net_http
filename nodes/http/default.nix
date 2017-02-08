@@ -2,7 +2,7 @@
 
 agent {
   src = ./.;
-  edges = with edges; [ net_http_address net_http_request net_http_response ];
+  edges = with edges; [ NetHttpAddress NetHttpRequest NetHttpResponse ];
   crates = with crates; [ rustfbp capnp tiny_http regex ];
   osdeps = with pkgs; [ openssl ];
 }

@@ -4,8 +4,6 @@ edge {
   src = ./.;
   edges =  with edges; [];
   schema = with edges; ''
-    @0xa8ac6fef929f35b5;
-
     enum NetHttpRequestMethod {
       get @0;
       patch @1;

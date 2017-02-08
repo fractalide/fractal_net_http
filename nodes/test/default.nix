@@ -1,15 +1,18 @@
-{ subgraph, nodes, edges }:
+{ subgraph, imsgs, nodes, edges }:
 
-subgraph {
+subgraph rec {
   src = ./.;
-  flowscript = with nodes; with edges; ''
+  imsg = imsgs {
+    edges = with edges; [ NetHttpAddress PrimText ];
+  };
+  flowscript = with nodes; ''
   http(${http})
-  '${net_http_address}:(address="0.0.0.0:8000")' -> listen http()
+  '${imsg}.NetHttpAddress:(address="0.0.0.0:8000")' -> listen http()
 
-  '${prim_text}:(text="Hello world")' -> option world(${rawtext})
-  '${prim_text}:(text="Hello fractalide")' -> option fractalide(${rawtext})
-  '${prim_text}:(text="Hello fractalide with ID")' -> option fractalideID(${rawtext})
-  '${prim_text}:(text="Hello fractalide with Post!")' -> option fractalideP(${rawtext})
+  '${imsg}.PrimText:(text="Hello world")' -> option world(${rawtext})
+  '${imsg}.PrimText:(text="Hello fractalide")' -> option fractalide(${rawtext})
+  '${imsg}.PrimText:(text="Hello fractalide with ID")' -> option fractalideID(${rawtext})
+  '${imsg}.PrimText:(text="Hello fractalide with Post!")' -> option fractalideP(${rawtext})
 
   http() GET[^/$] -> input world() output -> response http()
   http() GET[^/fractalide] -> input fractalide() output -> response http()
