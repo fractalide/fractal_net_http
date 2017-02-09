@@ -9,6 +9,7 @@ let
     nodes = buffet.nodes // fractalNodes;
     edges = buffet.edges // fractalEdges;
     support = buffet.support;
+    imsg = buffet.imsg;
     crates = buffet.crates;
     pkgs = buffet.pkgs;
   };
