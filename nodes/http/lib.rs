@@ -11,16 +11,16 @@ use tiny_http::{Server, Response, Request, Method};
 use std::sync::mpsc::Receiver;
 use std::thread;
 
-pub struct Portal {
+pub struct State {
     server: Option<Sender<bool>>,
     recv: Option<Receiver<Request>>,
     requests: HashMap<u64, Request>,
     id: u64,
 }
 
-impl Portal {
-    fn new() -> Portal {
-        Portal {
+impl State {
+    fn new() -> State {
+        State {
             server: None,
             recv: None,
             requests: HashMap::new(),
@@ -63,13 +63,13 @@ agent! {
       , OPTIONS: net_http_request
       , TRACE: net_http_request
       , PATCH: net_http_request),
-  portal(Portal => Portal::new()),
+  state(State => State::new()),
   fn run(&mut self) -> Result<Signal> {
       if let Ok(mut msg) = self.input.listen.try_recv() {
-          // TODO :: clean the portal
+          // TODO :: clean the state
           {
               let reader: net_http_address::Reader = msg.read_schema()?;
-              self.portal.listen(reader.get_address()?, self.input.request.get_sender())?;
+              self.state.listen(reader.get_address()?, self.input.request.get_sender())?;
           }
       }
 
@@ -79,15 +79,15 @@ agent! {
 
       if let Ok(msg) = self.input.request.try_recv() {
 
-          if let Some(ref recv) = self.portal.recv {
+          if let Some(ref recv) = self.state.recv {
               let mut request = recv.recv()?;
 
               let select_out = get_output_port(&self, request.method(), request.url())?;
               if let Some(select_out) = select_out {
-                  if self.portal.id == u64::max_value() {
-                      self.portal.id = 0;
+                  if self.state.id == u64::max_value() {
+                      self.state.id = 0;
                   } else {
-                      self.portal.id += 1;
+                      self.state.id += 1;
                   }
 
                   // Build the request
@@ -95,7 +95,7 @@ agent! {
                   {
                       let mut builder: net_http_request::Builder = msg.build_schema();
                       // ID
-                      builder.set_id(self.portal.id);
+                      builder.set_id(self.state.id);
                       // URL
                       builder.set_url(request.url());
                       // Headers
@@ -134,7 +134,7 @@ agent! {
                   }
 
                   select_out.send(msg)?;
-                  self.portal.requests.insert(self.portal.id, request);
+                  self.state.requests.insert(self.state.id, request);
               } else {
                   let response = Response::from_string("")
                       .with_status_code(404);
@@ -146,7 +146,7 @@ agent! {
       if let Ok(mut msg) = self.input.response.try_recv() {
           let reader: net_http_response::Reader = msg.read_schema()?;
           let response = Response::from_string(reader.get_response()?);
-          if let Some(req) = self.portal.requests.remove(&reader.get_id()) {
+          if let Some(req) = self.state.requests.remove(&reader.get_id()) {
               let resp = response.with_status_code(reader.get_status_code());
               req.respond(resp);
           }
