@@ -15,11 +15,10 @@ let
   targetNode = (head (attrVals [target.node] target.nodes));
   newBuffet = {
     nodes = recursiveUpdate buffet.nodes fractalNodes;
-    edges = recursiveUpdate buffet.edges fractalEdges;
+    edges = buffet.edges // fractalEdges;
     support = buffet.support;
     imsg = buffet.imsg;
     mods = buffet.mods;
-    crates = buffet.crates;
     pkgs = buffet.pkgs;
   };
   fractalEdges = import ./edges { buffet = newBuffet; };

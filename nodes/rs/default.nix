@@ -2,12 +2,17 @@
 
 # Please refer to section 2.6 namely Evolution of Public Contracts
 # of the Collective Code Construction Contract in CONTRIBUTING.md
+let
+  callPackage = buffet.pkgs.lib.callPackageWith ( buffet.pkgs // buffet.support.rs // buffet.support // buffet );
+in
 {
   # RAW NODES
   # -   raw nodes are incomplete and immature, they may wink into and out of existance
   # -   use at own risk, anything in this section can change at any time.
 
-  rs = import ./rs { inherit buffet; };
+  http = callPackage ./http {};
+  rawtext = callPackage ./rawtext {};
+  test = callPackage ./test {};
 
   # DRAFT NODES
   # -   draft nodes change a lot in tandom with other nodes in their subgraph

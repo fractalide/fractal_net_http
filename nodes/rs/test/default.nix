@@ -11,7 +11,7 @@ let
 in
 subgraph {
   src = ./.;
-  flowscript = with nodes; ''
+  flowscript = with nodes.rs; ''
   http(${http})
   '${NetHttpAddress}' -> listen http()
   '${PrimText1}' -> option world(${rawtext})

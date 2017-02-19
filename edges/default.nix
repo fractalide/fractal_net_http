@@ -2,7 +2,7 @@
 let
   callPackage = buffet.pkgs.lib.callPackageWith ( buffet.support // buffet );
 in
-rec {
+{
   NetHttpAddress = callPackage ./net/http/address {};
   NetHttpRequest = callPackage ./net/http/request {};
   NetHttpRequestHeader = callPackage ./net/http/request/header {};

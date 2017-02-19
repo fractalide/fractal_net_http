@@ -1,12 +1,22 @@
-## Fractalide Net Hyper
+# Net HTTP
 
----
+## Project Description:
 
-* Project Description:
-This frac implement a basic web server on top of Hyper
-* Project Problem:
-Actually, there is no http server on fractalide
-* Solution:
-This will allow to merge the Fractalide programming and a http server. The component "net_hyper" will send query on output port and receiver the response to give to the client in the "input" input port.
-* Stability:
-Experimental
+HTTP in Flow-based programming.
+
+## Stability Status:
+
+- [x] Raw
+- [ ] Draft
+- [ ] Stable
+- [ ] Deprecated
+- [ ] Legacy
+
+## Build Instructions
+Ensure you've installed [nix](https://nixos.org/nix).
+```
+$ export NIX_PATH+=:fractalide=https://github.com/fractalide/fractalide/archive/v20170218.tar.gz
+$ git clone git://github.com/fractalide/fractal_net_http.git
+$ cd fractal_net_http
+$ nix-build --argstr rs test
+```
