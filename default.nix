@@ -1,24 +1,33 @@
 {
   fractalide ? import <fractalide> {}
   , buffet ? fractalide.buffet
-  , node ? "test"
+  , rs ? null
+  , purs ? null
 }:
+
 let
-  defaultNode = (builtins.head (buffet.pkgs.lib.attrVals [node] fractalNodes));
+  inherit (buffet.pkgs.lib) attrVals recursiveUpdate;
+  inherit (buffet.pkgs) writeTextFile;
+  inherit (builtins) head;
+  target = if rs != null then { name = "rs"; nodes = newBuffet.nodes.rs; node = rs;}
+    else if purs != null then { name = "purs"; nodes = newBuffet.nodes.purs; node = purs;}
+    else { name = "rs"; nodes = newBuffet.nodes.rs; node = rs;};
+  targetNode = (head (attrVals [target.node] target.nodes));
   newBuffet = {
-    nodes = buffet.nodes // fractalNodes;
-    edges = buffet.edges // fractalEdges;
+    nodes = recursiveUpdate buffet.nodes fractalNodes;
+    edges = recursiveUpdate buffet.edges fractalEdges;
     support = buffet.support;
     imsg = buffet.imsg;
+    mods = buffet.mods;
     crates = buffet.crates;
     pkgs = buffet.pkgs;
   };
   fractalEdges = import ./edges { buffet = newBuffet; };
   fractalNodes = import ./nodes { buffet = newBuffet; };
-  fvm = import (<fractalide> + "/support/fvm/") { buffet = newBuffet; };
-  test = buffet.pkgs.writeTextFile {
-    name = defaultNode.name;
-    text = "${fvm}/bin/fvm ${defaultNode}";
+  fvm = import (<fractalide> + "/nodes/fvm/${target.name}") { buffet = newBuffet; };
+  test = writeTextFile {
+    name = targetNode.name;
+    text = "${fvm}/bin/fvm ${targetNode}";
     executable = true;
   };
 in
