@@ -18,11 +18,14 @@ let
     edges = buffet.edges // fractalEdges;
     support = buffet.support;
     imsg = buffet.imsg;
-    mods = buffet.mods;
+    mods = recursiveUpdate buffet.mods fractalMods;
     pkgs = buffet.pkgs;
+    release = buffet.release;
+    verbose = buffet.verbose;
   };
   fractalEdges = import ./edges { buffet = newBuffet; };
   fractalNodes = import ./nodes { buffet = newBuffet; };
+  fractalMods  = import ./mods  { buffet = newBuffet; };
   fvm = import (<fractalide> + "/nodes/fvm/${target.name}") { buffet = newBuffet; };
   test = writeTextFile {
     name = targetNode.name;
