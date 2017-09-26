@@ -1,8 +1,8 @@
 { edge, edges }:
 
-edge {
+edge.capnp {
   src = ./.;
-  edges =  with edges; [];
+  capnp_edges =  with edges; [];
   schema = with edges; ''
     struct NetHttpResponse {
       id @0 :UInt64;

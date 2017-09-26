@@ -2,7 +2,7 @@
 
 agent {
   src = ./.;
-  edges = with edges; [ PrimText NetHttpRequest NetHttpResponse ];
+  capnp_edges = with edges.capnp; [ PrimText NetHttpRequest NetHttpResponse ];
   mods = with mods.rs; [ rustfbp capnp ];
   osdeps = with pkgs; [ ];
 }

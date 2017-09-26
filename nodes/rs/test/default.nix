@@ -1,13 +1,13 @@
 { subgraph, imsg, nodes, edges }:
 let
   NetHttpAddress = imsg {
-    class = edges.NetHttpEdges.NetHttpAddress;
+    class = edges.capnp.NetHttpEdges.NetHttpAddress;
     text = ''(address="0.0.0.0:8000")'';
   };
-  PrimText1 = imsg { class = edges.PrimText; text = ''(text="Hello world")''; };
-  PrimText2 = imsg { class = edges.PrimText; text = ''(text="Hello fractalide")''; };
-  PrimText3 = imsg { class = edges.PrimText; text = ''(text="Hello fractalide with ID")''; };
-  PrimText4 = imsg { class = edges.PrimText; text = ''(text="Hello fractalide with Post!")''; };
+  PrimText1 = imsg { class = edges.capnp.PrimText; text = ''(text="Hello world")''; };
+  PrimText2 = imsg { class = edges.capnp.PrimText; text = ''(text="Hello fractalide")''; };
+  PrimText3 = imsg { class = edges.capnp.PrimText; text = ''(text="Hello fractalide with ID")''; };
+  PrimText4 = imsg { class = edges.capnp.PrimText; text = ''(text="Hello fractalide with Post!")''; };
 in
 subgraph {
   src = ./.;

@@ -1,8 +1,8 @@
 { edge, edges }:
 
-edge {
+edge.capnp {
   src = ./.;
-  edges =  with edges; [ NetHttpRequestMethod NetHttpRequestHeader NetHttpRequestVersion ];
+  edges = with edges.capnp; [ NetHttpRequestMethod NetHttpRequestHeader NetHttpRequestVersion ];
   schema = with edges; ''
     struct NetHttpRequest {
       id @0 :UInt64;

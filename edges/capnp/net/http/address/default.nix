@@ -1,12 +1,11 @@
 { edge, edges }:
 
-edge {
+edge.capnp {
   src = ./.;
   edges =  with edges; [];
   schema = with edges; ''
-    struct NetHttpRequestVersion {
-      main @0 :UInt8;
-      sub @1 :UInt8;
+    struct NetHttpAddress {
+      address @0 :Text;
     }
   '';
 }
